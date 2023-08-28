@@ -1,0 +1,125 @@
+---
+# This file contains UCS IMM variables.
+# 
+# Enter Intersight API Key ID and the location of the SecretKey file
+# 
+api_key_id        : <field1>/<field2>/<field3>
+api_private_key   : SecretKey.txt
+# 
+# Prefix added to the pool/policy/profile configuration to eaisly identify items created by Ansible
+prefix        : "Express-G14"
+
+# Organization Name
+org_name      : "FlexPod-Express"
+
+###############################################################################
+#
+# Server Configuration
+#
+##############################################################################
+
+# Server CPU Type - set to Intel or AMD
+server_cpu_type: "Intel"
+
+# VIC Type - set to 4G for 4th Gen VICs or 5G for 5th Gen VICs - Also add 4G or 5G to Server Profile Template Name
+vic_type: "4G"
+
+###############################################################################
+#
+# Server Policies
+#
+###############################################################################
+# BIOS policies
+name_of_bios_policy        : "{{ prefix }}-{{ server_cpu_type }}-M6-Virt-BIOS"
+name_of_m5_bios_policy     : "{{ prefix }}-Intel-M5-Virt-BIOS"
+#
+# IMC Access Policy - Configures the KVM to be accessed In-Band
+# The in-band vlan must be enabled on the trunk between Nexus 9K and UCS FI
+name_of_imc_access_policy           : "{{ prefix }}-IMC-Access-Policy"
+
+# KVM Access Policy - Enables (true) or disables (false) Tunneled KVM Server Access
+# Ensure the Intersight Account allows Tunneled KVM> To enable Tunneled KVM for 
+# account,  go to Settings > Security and Privacy and enable Tunneled KVM settings
+name_of_kvm_policy                  : "{{ prefix }}-KVM-Policy"
+enable_tunneled_kvm                 : 'true'
+
+#Network Connectivity Policy
+name_of_network_policy_native       : "{{ prefix }}-Network-Policy"
+name_of_network_policy_IB_vlan      : "{{ prefix }}-IB-Network-Policy"
+name_of_networkconfig_policy        : "{{ prefix }}-Network-Connectivity-Policy"
+PreferredIpv4dnsServer              : "{{ dns_servers[0].ip_address }}"
+AlternateIpv4dnsServer              : "{{ dns_servers[1].ip_address }}"
+
+#NTP Server Policy
+name_of_NTP_server_policy           : "{{ prefix }}-NTP-Server-Policy"          
+
+# Virtual Media Policy - enables mounting ISO files using KVM 
+name_of_vmedia_policy                 : "{{ prefix }}-KVM-Mount-vMedia"
+
+# IPMI over LAN Policy
+name_of_ipmi_policy                 : "{{ prefix }}-Enable-IPMIoLAN-Policy"
+EncryptionKey_value                 : "00"
+
+# Local User Policy to enable KVM and IPMI Access
+name_of_LocalUser_policy            : "{{ prefix }}-LocalUser-Policy"
+name_of_local_user                  : "admin"
+password_for_local_user             : <password> #This password should be same as what is used to login CIMC
+
+# storage policy
+name_of_storage_policy              : "{{ prefix }}-Storage-Policy"
+UseJbodForVdCreation                : 'false'
+UnusedDisksState                    : "NoChange"
+DefaultDriveMode                    : "UnconfiguredGood"
+Enable_M2VirtualDrive               : 'true'
+M2VirtualDrive_ControllerSlot       : "MSTOR-RAID-1"
+
+# Ethernet QoS Policy to set MTU 9000 and QoS Best Effort;
+# QoS values can be updated in roles/create_server_policies/defaults/main.yml
+name_of_ethernet_qos_policy         : "{{ prefix }}-EthernetQoS-Policy"
+
+# Default Ethernet Adapter Policy for VMware
+# Various values can be updated under roles/create_server_policies/defaults/main.yml
+name_of_ethernet_adapter_vmware_policy  : "{{ prefix }}-EthAdapter-16RxQs-Policy"
+
+# Configure Adapter Policy
+name_of_adapter_policy: "{{ prefix }}-EthAdapter-VMware-Policy"
+SlotId: "1"
+EnablePortChannel: False
+FecMode: "cl91"
+
+# LAN Connectivity Policy
+# 4 interfaces for all hosts.
+name_of_lan_connectivity_policy      : "{{ prefix }}-Boot-{{ vic_type }}-LANCon"
+VIC_SlotId                           : "{{ SlotId }}"
+name_of_vnic_1                             : "eth0"
+Cdn_value_of_vnic_1                        : "00-vSwitch0-A"
+name_of_vnic_2                             : "eth1"
+Cdn_value_of_vnic_2                        : "01-vDS0-A"
+name_of_vnic_3                             : "eth2"
+Cdn_value_of_vnic_3                        : "02-vSwitch0-B"
+name_of_vnic_4                             : "eth3"
+Cdn_value_of_vnic_4                        : "03-vDS0-B"
+
+# Boot mode for server. Either put Uefi or Legacy
+# UEFI secure boot true or flase
+boot_mode                   : "Uefi"
+enable_uefi_secureboot      : 'true'
+
+# Boot Device details for Local disk
+EnableLocalDisk: true
+Name_of_LocalDisk: "CiscoBootoptimizedM2Raidcont"
+LocalDisk_Slot: "MSTOR-RAID"
+
+# Boot Device details for Virtual Media
+Enable_VirtualMedia_boot_device: true
+Name_of_VirtualMedia: "DVD"
+VirtualMedia_Subtype: "kvm-mapped-dvd"
+
+# Boot Order Policy
+boot_order_policy_name         : "{{ prefix }}-{{ vic_type }}-Boot-Order-Policy"
+
+
+#------------------------- Server Profile ----------------------------------
+
+name_of_SPT       : "{{ prefix }}-{{ server_cpu_type }}-M2-Boot-Template"
+

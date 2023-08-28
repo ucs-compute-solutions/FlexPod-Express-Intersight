@@ -1,0 +1,33 @@
+---
+  # This task configures VDSs on the vCenter
+
+  - name: vCenter vDS creation
+    community.vmware.vmware_dvswitch:
+      hostname: '{{ vcenter_hostname }}'
+      username: '{{ vcenter_username }}'
+      password: '{{ vcenter_password }}'
+      validate_certs: no
+      datacenter_name: '{{ vcenter_dc }}'
+      switch_name: '{{ dvs_name }}'
+      #Best practices dictate mtu should always be 9000 therefore the value is hardcoded
+      mtu: 9000
+      uplink_quantity: '{{ dv_uplink }}'
+      discovery_protocol: '{{ dv_protocol }}'
+      discovery_operation: '{{ dv_operation }}'
+      state: present
+
+  - name: add lag to vDS
+    community.vmware.vmware_dvswitch_lacp:
+      hostname: '{{ vcenter_hostname }}'
+      username: '{{ vcenter_username }}'
+      password: '{{ vcenter_password }}'
+      validate_certs: no
+      switch: '{{ dvs_name }}'
+      support_mode: enhanced
+      link_aggregation_groups:
+         - name: lag1
+           uplink_number: 2
+           mode: active
+           load_balancing_mode: srcDestIpTcpUdpPort
+    tags: lap_test
+

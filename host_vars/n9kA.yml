@@ -1,0 +1,44 @@
+---
+vpc_source: "{{ hostvars['n9kA'].ansible_host }}"
+vpc_destination: "{{ hostvars['n9kB'].ansible_host }}"
+vpc_role_priority: "10"
+# NTP Distribution IP for N9K-A in the IB-MGMT VLAN
+IB_MGMT_ntp_dist_IP: "{{ ib_mgmt_ntp_servers[0].ip_address }}{{ ntp_distribution_nm_cidr }}"
+# Interface Lists; more interfaces can be added for additional BW
+#
+uplink_interface_list:
+  - interface: "Ethernet1/54"
+    description: "Uplink-SW"
+
+peerlink_interface_list:
+  - interface:  "Ethernet1/51"
+    description: "93180YC-FX-B:Eth1/51"
+  - interface:  "Ethernet1/52"
+    description: "93180YC-FX-B:Eth1/52"
+#
+vSwitch_interface_list:
+  - interface:  "Ethernet1/11"
+    description: "UCS1-VIC-P0-vSwitch-A"
+  - interface:  "Ethernet1/13"
+    description: "UCS2-VIC-P0-vSwitch-A"
+#
+vDS_interface_list:
+  - interface:  "Ethernet1/12"
+    description: "UCS1-VIC-P1-vDS-A"
+  - interface: "Ethernet1/14"
+    description: "UCS1-VIC-P1-vDS-A"
+#
+storage_A_interface_list:
+  - interface:  "Ethernet1/1"
+    description: "AFF-01-e1a"
+  - interface:  "Ethernet1/2"
+    description: "AFF-01-e1b"
+#
+storage_B_interface_list:
+  - interface:  "Ethernet1/3"
+    description: "AFF-02:e1a"
+  - interface:  "Ethernet1/4"
+    description: "AFF-02:e1b"
+#
+all_interfaces: "{{ uplink_interface_list + peerlink_interface_list + vDS_interface_list + storage_A_interface_list + storage_B_interface_list + vSwitch_interface_list }}"
+ucs_nexus_links: "{{ vDS_interface_list + vSwitch_interface_list }}"

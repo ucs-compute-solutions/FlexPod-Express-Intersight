@@ -1,0 +1,41 @@
+---
+- name: "Configure Storage Policy"
+  vars:
+    api_info: &api_info_storage
+      api_private_key: "{{ api_private_key }}"
+      api_key_id: "{{ api_key_id }}"
+      api_uri: "{{ api_uri | default(omit) }}"
+      validate_certs: "{{ validate_certs | default(omit) }}"
+      state: "{{ state | default(omit) }}"
+
+  cisco.intersight.intersight_rest_api:
+    <<: *api_info_storage
+    resource_path: /storage/StoragePolicies
+    query_params:
+       $filter: "Name eq '{{ name_of_storage_policy }}'"
+    api_body: {
+        "Name": "{{ name_of_storage_policy }}",
+        "Description": "{{ description_of_storage_policy }}",
+        "UseJbodForVdCreation": "{{ UseJbodForVdCreation|bool }}",
+        "UnusedDisksState": "{{ UnusedDisksState }}",
+        "DefaultDriveMode": "{{ DefaultDriveMode }}",
+        "M2VirtualDrive": {
+           "Enable": "{{ Enable_M2VirtualDrive|bool }}",
+           "ControllerSlot": "{{ M2VirtualDrive_ControllerSlot }}"
+          },
+        "Raid0Drive": {
+           "Enable": false,
+           "VirtualDrivePolicy": {
+              "AccessPolicy": "Default",
+              "DriveCache": "Default",
+              "ReadPolicy": "Default",
+              "StripSize": 64,
+              "WritePolicy": "Default"
+           }
+          },
+        "Organization": {
+           "Moid": "{{ intersight_org.api_response.Moid }}"
+         },
+        Tags: [{Key: "configmode", Value: "ansible"},{Key: "prefix", Value: "{{ prefix }}"}]
+     }
+  register: storage_policy

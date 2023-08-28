@@ -1,0 +1,65 @@
+---
+# Create  server policies specific to Converged Infrastrucure stack
+- name: "Create IMM Server Policies"
+  vars:
+    api_info: &api_info_org_moid
+      api_private_key: "{{ api_private_key }}"
+      api_key_id: "{{ api_key_id }}"
+      api_uri: "{{ api_uri | default(omit) }}"
+      validate_certs: "{{ validate_certs | default(omit) }}"
+      state: "{{ state | default(omit) }}"
+  intersight_rest_api:
+    <<: *api_info_org_moid
+    resource_path: /organization/Organizations
+    query_params:
+      $filter: "Name eq '{{ org_name }}'"
+  register: intersight_org
+  delegate_to: localhost
+  tags: always
+  run_once: true
+
+# Collect information on existence of Boot Order Policy, LAN Connectivity Policy
+- include_tasks: gather_policy_info.yml
+
+# Create Bios Policy
+- include_tasks: create_bios_policies.yml
+
+# Create KVM Policy
+- include_tasks: create_kvm_policy.yml
+
+# Create vMedia Policy
+- include_tasks: create_vmedia_policy.yml
+
+# Create Boot Order Policy 
+- include_tasks: create_boot_order_policy.yml
+
+# Create IPMI over LAN Policy to enable IPMI over LAN
+- include_tasks: create_ipmi_policy.yml
+  
+# Create Local User Policy to allow KVM Access
+- include_tasks: create_local_user_policy.yml
+
+#Create Network Connectivity Policy
+- include_tasks: create_network_connectivity_policy.yml
+
+# Create NTP Server Policy
+- include_tasks: create_NTP_server_policy.yml
+
+# Configure Storage Policy
+- include_tasks: create_storage_policy.yml
+
+# Configure Adapter Policy
+- include_tasks: create_adapter_policy.yml 
+
+# Create Ethernet QoS Policy
+- include_tasks: create_ethernet_qos_policy.yml
+
+# Create Ethernet Network Control Policy
+- include_tasks: create_ethernet_network_policy.yml
+
+# Create VMware and High Traffic Ethernet Adapter Policy
+- include_tasks: create_ethernet_adapter_policies.yml
+
+# Configure LAN Connectivity Policy 
+- include_tasks: create_lan_connectivity_policy.yml
+

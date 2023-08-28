@@ -1,0 +1,2 @@
+  - include_tasks: migrate_to_nvme_vds.yml
+    when: configure_nvme_tcp == 'true'

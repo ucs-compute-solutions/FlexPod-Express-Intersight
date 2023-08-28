@@ -1,0 +1,196 @@
+---
+# Get BIOS Policy Details for Service Profile Template
+- name: "Get BIOS Policy Details"
+  vars:
+    api_info: &api_info_bios_policy
+      api_private_key: "{{ api_private_key }}"
+      api_key_id: "{{ api_key_id }}"
+      api_uri: "{{ api_uri | default(omit) }}"
+      validate_certs: "{{ validate_certs | default(omit) }}"
+      state: "{{ state | default(omit) }}"
+
+  intersight_rest_api:
+    <<: *api_info_bios_policy
+    resource_path: /bios/Policies
+    query_params:
+      $filter: "Name eq '{{ name_of_bios_policy }}'"
+  register:  bios_policy_details
+
+# Get Boot Order Policy for Service Profile Template 
+- name: "Get Boot Order Policy Details"
+  vars:
+    api_info: &api_info_boot_policy
+      api_private_key: "{{ api_private_key }}"
+      api_key_id: "{{ api_key_id }}"
+      api_uri: "{{ api_uri | default(omit) }}"
+      validate_certs: "{{ validate_certs | default(omit) }}"
+      state: "{{ state | default(omit) }}"
+
+  intersight_rest_api:
+    <<: *api_info_boot_policy
+    resource_path: /boot/PrecisionPolicies
+    query_params:
+      $filter: "Name eq '{{ boot_order_policy_name }}'"
+  register:  boot_order_policy_details
+
+# Get IPMI over LAN Policy for Service Profile Template
+- name: "Get IPMI over LAN Policy Details"
+  vars:
+    api_info: &api_info_ipmi
+      api_private_key: "{{ api_private_key }}"
+      api_key_id: "{{ api_key_id }}"
+      api_uri: "{{ api_uri | default(omit) }}"
+      validate_certs: "{{ validate_certs | default(omit) }}"
+      state: "{{ state | default(omit) }}"
+
+  intersight_rest_api:
+    <<: *api_info_ipmi
+    resource_path: /ipmioverlan/Policies
+    query_params:
+      $filter: "Name eq '{{ name_of_ipmi_policy }}'"
+
+  register:  ipmi_policy_details
+  
+# Get Local User Policy for Service Profile Template
+- name: "Get Local User Policy Details"
+  vars:
+    api_info: &api_info_LocalUser
+      api_private_key: "{{ api_private_key }}"
+      api_key_id: "{{ api_key_id }}"
+      api_uri: "{{ api_uri | default(omit) }}"
+      validate_certs: "{{ validate_certs | default(omit) }}"
+      state: "{{ state | default(omit) }}"
+
+  intersight_rest_api:
+    <<: *api_info_LocalUser
+    resource_path: /iam/EndPointUserPolicies
+    query_params:
+      $filter: "Name eq '{{ name_of_LocalUser_policy }}'"
+
+  register:  local_user_policy_details
+
+# Get KVM Policy for Service Profile Template
+- name: "Get KVM Policy Details"
+  vars:
+    api_info: &api_info_kvm
+      api_private_key: "{{ api_private_key }}"
+      api_key_id: "{{ api_key_id }}"
+      api_uri: "{{ api_uri | default(omit) }}"
+      validate_certs: "{{ validate_certs | default(omit) }}"
+      state: "{{ state | default(omit) }}"
+
+  intersight_rest_api:
+    <<: *api_info_kvm
+    resource_path: /kvm/Policies
+    query_params:
+      $filter: "Name eq '{{ name_of_kvm_policy }}'"
+
+  register:  kvm_policy_details
+
+# Get Virtual Media Policy for Service Profile Template
+- name: "Get Virtual Media Policy Details"
+  vars:
+    api_info: &api_info_vmedia
+      api_private_key: "{{ api_private_key }}"
+      api_key_id: "{{ api_key_id }}"
+      api_uri: "{{ api_uri | default(omit) }}"
+      validate_certs: "{{ validate_certs | default(omit) }}"
+      state: "{{ state | default(omit) }}"
+
+  intersight_rest_api:
+    <<: *api_info_vmedia
+    resource_path: /vmedia/Policies
+    query_params:
+      $filter: "Name eq '{{ name_of_vmedia_policy }}'"
+
+  register:  vmedia_policy_details
+
+# Get LAN Connectivity Policy for Service Profile Template 
+- name: "Get LAN Connectivity Policy Details"
+  vars:
+    api_info: &api_info_lan_connectivity
+      api_private_key: "{{ api_private_key }}"
+      api_key_id: "{{ api_key_id }}"
+      api_uri: "{{ api_uri | default(omit) }}"
+      validate_certs: "{{ validate_certs | default(omit) }}"
+      state: "{{ state | default(omit) }}"
+
+  intersight_rest_api:
+    <<: *api_info_lan_connectivity
+    resource_path: /vnic/LanConnectivityPolicies
+    query_params:
+      $filter: "Name eq '{{ name_of_lan_connectivity_policy }}'"
+
+  register:  lan_connectivity_policy_details
+
+# Get Network Config Policy for Service Profile Template
+- name: "Get Network Connectivity Policy Details"
+  vars:
+    api_info: &api_info_network_connectivity
+      api_private_key: "{{ api_private_key }}"
+      api_key_id: "{{ api_key_id }}"
+      api_uri: "{{ api_uri | default(omit) }}"
+      validate_certs: "{{ validate_certs | default(omit) }}"
+      state: "{{ state | default(omit) }}"
+
+  intersight_rest_api:
+    <<: *api_info_network_connectivity
+    resource_path: /networkconfig/Policies
+    query_params:
+      $filter: "Name eq '{{ name_of_networkconfig_policy }}'"
+
+  register:  networkconfig_policy_details
+
+# Get NTP Policy for Service Profile Template
+- name: "Get NTP Server Policy Details"
+  vars:
+    api_info: &api_info_NTP
+      api_private_key: "{{ api_private_key }}"
+      api_key_id: "{{ api_key_id }}"
+      api_uri: "{{ api_uri | default(omit) }}"
+      validate_certs: "{{ validate_certs | default(omit) }}"
+      state: "{{ state | default(omit) }}"
+
+  intersight_rest_api:
+    <<: *api_info_NTP
+    resource_path: /ntp/Policies
+    query_params:
+      $filter: "Name eq '{{ name_of_NTP_server_policy }}'"
+
+  register:  ntp_policy_details
+
+# Get Storage Policy for Service Profile Template
+- name: "Get Storage Policy Details"
+  vars:
+    api_info: &api_info_storage
+      api_private_key: "{{ api_private_key }}"
+      api_key_id: "{{ api_key_id }}"
+      api_uri: "{{ api_uri | default(omit) }}"
+      validate_certs: "{{ validate_certs | default(omit) }}"
+      state: "{{ state | default(omit) }}"
+
+  intersight_rest_api:
+    <<: *api_info_storage
+    resource_path: /storage/StoragePolicies
+    query_params:
+      $filter: "Name eq '{{ name_of_storage_policy }}'"
+
+  register:  storage_policy_details
+
+# Get adapter Policy for Service Profile Template
+- name: "Get Adapter Policy Details"
+  vars:
+    api_info: &api_info_adapter
+      api_private_key: "{{ api_private_key }}"
+      api_key_id: "{{ api_key_id }}"
+      api_uri: "{{ api_uri | default(omit) }}"
+      validate_certs: "{{ validate_certs | default(omit) }}"
+      state: "{{ state | default(omit) }}"
+
+  intersight_rest_api:
+    <<: *api_info_adapter
+    resource_path: /adapter/ConfigPolicies
+    query_params:
+      $filter: "Name eq '{{ name_of_adapter_policy }}'"
+
+  register:  adapter_policy_details

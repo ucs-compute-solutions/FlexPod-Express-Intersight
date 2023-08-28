@@ -1,0 +1,67 @@
+---
+
+- name: "Configure Adapter Policy"
+  vars:
+    api_info: &api_info_adapter
+      api_private_key: "{{ api_private_key }}"
+      api_key_id: "{{ api_key_id }}"
+      api_uri: "{{ api_uri | default(omit) }}"
+      validate_certs: "{{ validate_certs | default(omit) }}"
+      state: "{{ state | default(omit) }}"
+  block:
+  - name: "Create Adapter Policy"
+    cisco.intersight.intersight_rest_api:
+          <<: *api_info_adapter
+          resource_path: /adapter/ConfigPolicies
+          query_params:
+             $filter: "Name eq '{{ name_of_adapter_policy }}'"
+          api_body: {
+              "Name": "{{ name_of_adapter_policy }}",
+              "Description": "{{ description_of_adapter_policy }}",
+              #Tags: [{Key: "configmode", Value: "ansible"},{Key: "prefix", Value: "{{ prefix }}"}],
+              "Organization": {
+                 "Moid": "{{ intersight_org.api_response.Moid }}"
+                 },
+
+                  "Settings": [
+                  {
+                  "SlotId": "{{SlotId}}",
+                  "EthSettings": {
+                      "LldpEnabled": True
+                  },
+                  "FcSettings": {
+                      "FipEnabled": False
+                  },
+                  "PortChannelSettings": {
+                      "Enabled": "{{EnablePortChannel|bool}}"
+                  },
+                  "ObjectType": "adapter.AdapterConfig",
+
+                  "DceInterfaceSettings": [
+                      {
+                          "InterfaceId": 0,
+                          "FecMode": "{{FecMode}}",
+                          "ObjectType": "adapter.DceInterfaceSettings"
+                      },
+                      {
+                          "InterfaceId": 1,
+                          "FecMode": "{{FecMode}}",
+                          "ObjectType": "adapter.DceInterfaceSettings"
+                      },
+                      {
+                          "InterfaceId": 2,
+                          "FecMode": "{{FecMode}}",
+                          "ObjectType": "adapter.DceInterfaceSettings"
+                      },
+                      {
+                          "InterfaceId": 3,
+                          "FecMode": "{{FecMode}}",
+                          "ObjectType": "adapter.DceInterfaceSettings"
+                      }
+                  ]
+      }
+      ],
+
+    "Tags": [{Key: "configmode", Value: "ansible"},{Key: "prefix", Value: "{{ prefix }}"}]
+}
+    register: adapter_policy

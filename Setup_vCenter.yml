@@ -1,0 +1,43 @@
+################################################################################
+#
+# vCenter Setup Section
+# VMWare vCenter and the ESXi hosts must be installed and available
+# using the IP addresses and passwords provided. The ESXi addresses and
+# passwords are part of inventory file. The vCenter connectivity info is
+# included in group_vars/all.yml
+#
+#
+################################################################################
+- hosts: localhost
+  roles:
+    - VMware/VMWAREvcenter
+
+################################################################################
+#
+# Host Setup Section
+#
+################################################################################
+
+- hosts: esxi
+  gather_facts: no
+  serial: 1
+  roles:
+    - role: VMware/ESXIpostvC
+    - role: VMware/ESXIpostvCNVMe
+      when: configure_nvme_tcp == 'true'
+
+################################################################################
+#
+# vCenter Setup Section After Adding Hosts to vCenter
+# VMWare vCenter and the ESXi hosts must be installed and available
+# using the IP addresses and passwords provided. The ESXi addresses and
+# passwords are part of inventory file. The vCenter connectivity info is
+# included in group_vars/all.yml
+#
+#
+################################################################################
+- hosts: localhost
+  vars_files:
+    - vars/ontap_main.yml
+  roles:
+    - VMware/VMWAREvcenterpostESXI

@@ -1,0 +1,57 @@
+---
+########################################################################################
+# Note: the NVMe-TCP Service will need to be manually added to the VMkernel ports before
+# NVMe-TCP can be used.
+########################################################################################
+
+# Add the NVMe-TCP-A VMKernel to {{ dvs_name }}
+  - name: Add  NVMe-TCP-A VMKernel to {{ dvs_name }}
+    community.vmware.vmware_vmkernel:
+      hostname: '{{ vcenter_hostname }}'
+      username: '{{ vcenter_username }}'
+      password: '{{ vcenter_password }}'
+      validate_certs: no
+      esxi_hostname: '{{ inventory_hostname }}'
+      dvswitch_name: '{{ dvs_name }}'
+      portgroup_name: '{{ nvme_tcp_vds_vlan_list[0].portgroup_name }}'
+      mtu: 9000
+      network:
+        type: 'static'
+        ip_address: '{{ nvme_a_ip }}'
+        subnet_mask: '{{ nvme_mask }}'
+      state: present
+    delegate_to: localhost
+    when: configure_nvme_tcp == 'true'
+
+# Add the NVMe-TCP tag to the NVMe-TCP-A VMkernel port
+  - name: Add the NVMe-TCP tag to the NVMe-TCP-A VMkernel port
+    ansible.builtin.command: esxcli network ip interface tag add -i vmk3 -t NVMeTCP
+    args:
+      warn: false
+    when: configure_nvme_tcp == 'true'
+
+# Add the NVMe-TCP-B VMKernel to {{ dvs_name }}
+  - name: Add  NVMe-TCP-B VMKernel to {{ dvs_name }}
+    community.vmware.vmware_vmkernel:
+      hostname: '{{ vcenter_hostname }}'
+      username: '{{ vcenter_username }}'
+      password: '{{ vcenter_password }}'
+      validate_certs: no
+      esxi_hostname: '{{ inventory_hostname }}'
+      dvswitch_name: '{{ dvs_name }}'
+      portgroup_name: '{{ nvme_tcp_vds_vlan_list[1].portgroup_name }}'
+      mtu: 9000
+      network:
+        type: 'static'
+        ip_address: '{{ nvme_b_ip }}'
+        subnet_mask: '{{ nvme_mask }}'
+      state: present
+    delegate_to: localhost
+    when: configure_nvme_tcp == 'true'
+
+# Add the NVMe-TCP tag to the NVMe-TCP-A VMkernel port
+  - name: Add the NVMe-TCP tag to the NVMe-TCP-B VMkernel port
+    ansible.builtin.command: esxcli network ip interface tag add -i vmk4 -t NVMeTCP
+    args:
+      warn: false
+    when: configure_nvme_tcp == 'true'

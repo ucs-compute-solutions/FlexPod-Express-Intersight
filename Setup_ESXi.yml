@@ -1,0 +1,13 @@
+################################################################################
+#
+# Host Setup Section
+#
+################################################################################
+---
+- hosts: esxi
+  gather_facts: no
+  serial: 1
+  vars_files:
+    - vars/ontap_main.yml
+  roles:
+    - role: VMware/ESXIhosts

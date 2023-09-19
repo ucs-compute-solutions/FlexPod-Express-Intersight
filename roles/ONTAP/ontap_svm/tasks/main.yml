@@ -186,3 +186,33 @@
     validate_certs: false
   tags:
     - ontap_unlock_vsadmin
+
+# Create login banner for the Storage Virtual Machine
+- name: Create login banner for the SVM
+  netapp.ontap.na_ontap_login_messages:
+    vserver: "{{item.svm_name}}"
+    banner: "{{item.svm_login_banner}}"
+    hostname: "{{inventory_hostname}}"
+    username: "{{username}}"
+    password: "{{password}}"
+    https: true
+    validate_certs: false
+  with_items:
+    - "{{svm_specs}}"
+  tags:
+    - ontap_svm_login_banner
+
+# Remove insecure ciphers from the Storage Virtual Machine. Ciphers with the suffix CBC are considered insecure
+- name: Remove insecure ciphers from the SVM
+  netapp.ontap.na_ontap_rest_cli:
+    command: 'security/ssh/remove'
+    verb: 'DELETE'
+    params: {'vserver': '{{svm_specs.svm_name}}'}
+    body: {'ciphers': ['aes256-cbc','aes192-cbc','aes128-cbc','3des-cbc']}
+    hostname: "{{inventory_hostname}}"
+    username: "{{username}}"
+    password: "{{password}}"
+    https: true
+    validate_certs: false
+  tags:
+    - ontap_svm_remove_insecure_ciphers

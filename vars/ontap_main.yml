@@ -42,20 +42,26 @@ autosupport_vars:
   from_address: "ontap_cluster@netapp.com"
   to_addresses: "email-address"
 
+#FIPS Mode on the ONTAP Cluster. By default, SSL on ONTAP is set with FIPS compliance disabled. Set this to "true" if you want to enable FIPS-compliant mode for the cluster
+is_fips_enabled: false
+
 #SNMP related variables
 enable_snmp: true
 #Please make sure to fill out the below details if you have chosen to enable SNMP, leaving it empty will cause the setup to fail
 snmp_contact: "email-address"
 snmp_location: "NetApp RTP, G14, A250"
-traphost_ip: "10.102.1.95"
-snmp_community: "public"
+traphost_ip: "10.102.1.95"   #An SNMPv1 traphost is non-compliant to FIPS. You can only configure SNMPv1 traps if "is_fips_enabled" is set to false. Modify this value if Cluster FIPS mode is disabled
+snmp_community: "public"   #Update this field only if "is_fips_enabled" is set to false. SNMPv1 and SNMPv2c are enabled after you create an SNMP community. SNMPv1 and SNMPv2c are not supported when cluster FIPS mode is enabled
 
 #SNMPv3 related variables
-user: snmpv3_user   #The name of the user to manage
-authentication_protocol: md5   #Authentication protocol for the snmp user (Choices: none, md5, sha, sha2-256)
-authentication_password: <password>   #Password for the authentication protocol
-privacy_protocol: none   #Privacy protocol for the snmp user (Choices: none, des, aes128)
-privacy_password: <password>   #Password for the privacy protocol
+user: snmpv3_user   #The name of the SNMPv3 user to manage  
+authentication_protocol: md5   #Authentication protocol for the snmp user (Choices: none, md5, sha, sha2-256). If "is_fips_enabled" is set to true, the options are 'sha' and 'sha2-256'. SNMPv3 user with none or MD5 as authentication protocol is non-compliant to FIPS
+authentication_password: <password>   #Password for the authentication protocol. This is required for ‘md5’, ‘sha’ and ‘sha2-256’ authentication protocols and not required for ‘none’
+privacy_protocol: none   #Privacy protocol for the snmp user (Choices: none, des, aes128). When cluster FIPS mode is on (is_fips_enabled: true), ‘aes128’ is the only possible and valid value. SNMPv3 user with none or DES as encryption protocol is non-compliant to FIPS
+privacy_password: <password>   #Password for the privacy protocol. This is required for ‘des’ and ‘aes128’ privacy protocols and not required for ‘none’
+
+#Cluster Login banner Text message
+cluster_login_banner: Access restricted to authorized users
 
 #Text sent in the subject line of the AutoSupport message
 autosupport_message: "FlexPod ONTAP Storage configuration completed"
@@ -121,6 +127,8 @@ svm_specs:
     - "{{ dns_servers[0].ip_address }}"
     - "{{ dns_servers[1].ip_address }}"
   dns_domain_svm: "{{ dns_domain_name }}"
+  
+  svm_login_banner: The Infra-SVMis reserved for authorized users only!  #SVM Login banner Text message
 
 ##################################################################################################################################################
 # Default/Best Practice related information - Change only if required

@@ -268,7 +268,6 @@
     from_address: "{{autosupport_vars.from_address}}"
     proxy_url: "{{autosupport_vars.proxy_url | default(omit)}}"
     transport: https
-    post_url: "{{autosupport_vars.post_url | default(omit)}}"
     support: true
     state: present
     hostname: "{{inventory_hostname}}"
@@ -325,7 +324,7 @@
   tags:
     - ontap_fips_config
 
-#Debug message to get the status of Cluster FIPS mode
+# Debug message to get the status of Cluster FIPS mode
 - ansible.builtin.debug: msg="Cluster FIPS mode is enabled."
   when: is_fips_enabled == true
   tags:

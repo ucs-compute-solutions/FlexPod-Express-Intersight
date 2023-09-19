@@ -312,7 +312,31 @@
   tags:
     - ontap_license_nlf
 
-# Configure SNMP
+# Enable/Disable FIPS Mode on the ONTAP Cluster
+- name: Enable/Disable FIPS on the ONTAP Cluster
+  netapp.ontap.na_ontap_security_config:
+    name: ssl
+    is_fips_enabled: "{{is_fips_enabled}}"
+    hostname: "{{inventory_hostname}}"
+    username: "{{username}}"
+    password: "{{password}}"
+    https: true
+    validate_certs: false
+  tags:
+    - ontap_fips_config
+
+#Debug message to get the status of Cluster FIPS mode
+- ansible.builtin.debug: msg="Cluster FIPS mode is enabled."
+  when: is_fips_enabled == true
+  tags:
+    - ontap_fips_config
+
+- ansible.builtin.debug: msg="Cluster FIPS mode is disabled."
+  when: is_fips_enabled == false
+  tags:
+    - ontap_fips_config
+
+# Configure SNMP contact
 - name: Configure SNMP contact
   netapp.ontap.na_ontap_rest_cli:
     command: 'system/snmp/contact'
@@ -325,8 +349,9 @@
     validate_certs: false
   when: enable_snmp == true
   tags:
-    - ontap_config_snmp
+    - ontap_config_snmp_contact
 
+# Configure SNMP location
 - name: Configure SNMP location
   netapp.ontap.na_ontap_rest_cli:
     command: 'system/snmp/location'
@@ -339,8 +364,9 @@
     validate_certs: false
   when: enable_snmp == true
   tags:
-    - ontap_config_snmp
+    - ontap_config_snmp_location
 
+# Configure SNMP init value
 - name: Configure SNMP init value
   netapp.ontap.na_ontap_rest_cli:
     command: 'system/snmp/init'
@@ -353,8 +379,9 @@
     validate_certs: false
   when: enable_snmp == true
   tags:
-    - ontap_config_snmp
+    - ontap_config_snmp_init
 
+# Enable SNMP
 - name: Enable SNMP
   netapp.ontap.na_ontap_rest_cli:
     command: options
@@ -370,23 +397,26 @@
     validate_certs: false
   when: enable_snmp == true
   tags:
-    - ontap_config_snmp
+    - ontap_enable_snmp
 
+# Configure SNMP traps to send to remote hosts
 - name: Create SNMP traphost
   netapp.ontap.na_ontap_snmp_traphosts:
     state: present
-    ip_address: "{{traphost_ip}}"
+    host: "{{traphost_ip}}"
     hostname: "{{inventory_hostname}}"
     username: "{{username}}"
     password: "{{password}}"
     https: true
     validate_certs: false
-  when: enable_snmp == true
+  when:
+    - enable_snmp == true
+    - is_fips_enabled == false
   tags:
-    - ontap_config_snmp
+    - ontap_config_snmp_traphost
 
-# Configure SNMPv1 Access
-- name: Configure SNMPv1 Access
+# Configure SNMP community. SNMPv1 and SNMPv2c are enabled after you create an SNMP community
+- name: Configure SNMP community
   netapp.ontap.na_ontap_snmp:
     state: present
     community_name: "{{snmp_community}}"
@@ -396,9 +426,11 @@
     password: "{{password}}"
     https: true
     validate_certs: false
-  when: enable_snmp == true
+  when:
+    - enable_snmp == true
+    - is_fips_enabled == false
   tags:
-    - ontap_config_snmpv1_access
+    - ontap_config_snmp_community
 
 # Configure SNMPv3 Access
 - name: Configure SNMPv3 Access
@@ -421,3 +453,30 @@
   when: enable_snmp == true
   tags:
     - ontap_config_snmpv3_access
+
+# Create login banner for the ONTAP Cluster
+- name: Create login banner for the ONTAP Cluster
+  netapp.ontap.na_ontap_login_messages:
+    banner: "{{cluster_login_banner}}"
+    hostname: "{{inventory_hostname}}"
+    username: "{{username}}"
+    password: "{{password}}"
+    https: true
+    validate_certs: false 
+  tags:
+    - ontap_cluster_login_banner
+
+# Remove insecure ciphers from the ONTAP Cluster. Ciphers with the suffix CBC are considered insecure
+- name: Remove insecure ciphers from the ONTAP Cluster
+  netapp.ontap.na_ontap_rest_cli:
+    command: 'security/ssh/remove'
+    verb: 'DELETE'
+    params: {'vserver': '{{cluster_name}}'}
+    body: {'ciphers': ['aes256-cbc','aes192-cbc','aes128-cbc','3des-cbc']}
+    hostname: "{{inventory_hostname}}"
+    username: "{{username}}"
+    password: "{{password}}"
+    https: true
+    validate_certs: false
+  tags:
+    - ontap_cluster_remove_insecure_ciphers

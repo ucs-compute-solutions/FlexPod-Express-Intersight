@@ -1,5 +1,5 @@
 
-# FlexPod Converged Infrastructure setup using Ansible for FlexPod Express with Cisco UCS C series server in Intersight Managed Mode, VMware vSphere 8.0 U3, and NetApp ONTAP 9.12
+# FlexPod Converged Infrastructure setup using Ansible for FlexPod Express with Cisco UCS C series server in Intersight Managed Mode, VMware vSphere 8.0, and NetApp ONTAP 9.12.1
 
 This repository for FlexPod contains Ansible playbooks to configure Cisco Nexus, Cisco UCS Intersight, NetApp ONTAP, VMware ESXi, and VMware vCenter. This repository can be used for setting up Cisco devices, NetApp ONTAP Storage, and VMware ESXi and vCenter as covered in the following NVA: https://www.netapp.com/pdf.html?item=/media/88340-NVA-FlexpodExpress_C220_A250_NexusFinal.pdf
 

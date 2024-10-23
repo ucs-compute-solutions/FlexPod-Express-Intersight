@@ -94,4 +94,5 @@ If you would like to run a part of the deployment, you may use the appropriate t
 
 ### Authors
 
+ * Kamini Singh (kamini.singh@netapp.com)
  * Ruchika Lahoti (ruchikal@netapp.com)
